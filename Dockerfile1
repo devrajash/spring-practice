@@ -1,0 +1,6 @@
+FROM openjdk:17-jdk-slim
+
+COPY . .
+ENV PORT=8080
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","target/springboot1-0.0.1-SNAPSHOT.jar"]
