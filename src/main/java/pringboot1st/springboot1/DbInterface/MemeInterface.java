@@ -16,6 +16,7 @@ public class MemeInterface {
     private String name;
     private Number height;
     private Number width;
+    private String userId;
     private String url;
 
     public void setId(String id) {
@@ -64,6 +65,14 @@ public class MemeInterface {
 
     public String getIdName() {
         return idName;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
 }
