@@ -33,10 +33,11 @@ public class AuthControllerService {
                     .username(request.getUsername())
                     .password(passwordEncoder.encode(request.getPassword()))
                     .build();
-            repository.save(user);
+           var userData= repository.save(user);
             var jwtToken = jwtService.genarateTokenWithPayload(user);
             return AuthResponse.builder()
                     .token(jwtToken)
+                    .userDetails(userData)
                     .username(user.getUsername())
                     .build();
 
@@ -55,6 +56,7 @@ public class AuthControllerService {
 
             return AuthResponse.builder()
                     .username(user.getUsername())
+                    .userDetails(user)
                     .token(jwtService.genarateTokenWithPayload(user))
                     .build();
         } catch (Exception exception) {
