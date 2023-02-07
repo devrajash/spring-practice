@@ -10,7 +10,7 @@ public class MemeInterface {
     @Id
     private String id;
 
-    @Indexed(unique = true)
+
     private String idName;
 
     private String name;

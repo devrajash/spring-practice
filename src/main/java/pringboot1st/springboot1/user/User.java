@@ -26,6 +26,7 @@ public class User implements UserDetails {
     private String firstname;
     private String lastname;
 
+    private String image;
     private String password;
 
     @Override

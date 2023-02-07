@@ -52,7 +52,8 @@ public class RestApiEndPointController {
     public Object setMyFavMeme(@RequestBody MemeInterface meme) {
 
         try {
-            var alreadyExistData = memeModal.findByIdName(meme.getIdName());
+            User tokenAuth = jwtTokenData.getTokenAuthData();
+            var alreadyExistData = memeModal.findByIdNameAndUserId(meme.getIdName(),tokenAuth.getId());
 
             // var objMapper = new ObjectMapper();
             // try {
@@ -95,9 +96,9 @@ public class RestApiEndPointController {
     }
 
     @RequestMapping(value = "/get-fav-meme-byid", produces = { "application/json" }, method = RequestMethod.GET)
-    public Object getMyFavMemeById(@RequestParam String idName) {
+    public Object getMyFavMemeById(@RequestParam String id) {
         try {
-            var res = memeModal.findByIdName(idName);
+            var res = memeModal.findById(id);
             // var res = memeModal.findById("63cbc17eb61bd94061c641b4");
             // // 63cbc17eb61bd94061c641b4
             if (res.equals(Optional.empty())) {
@@ -117,11 +118,11 @@ public class RestApiEndPointController {
     @RequestMapping(value = "/delete-meme-byid/{idName}", produces = {
             "application/json" }, method = RequestMethod.DELETE)
     public Object deleteMemeById(@PathVariable String idName) {
-
+        User tokenAuth = jwtTokenData.getTokenAuthData();
         try {
-            var res = memeModal.findByIdName(idName);
+            var res = memeModal.findByIdNameAndUserId(idName,tokenAuth.getId());
             if (res.isPresent()) {
-                memeModal.deleteByIdName(idName);
+                memeModal.deleteByIdNameAndUserId(idName,tokenAuth.getId());
                 return (new JSONObject("{'msg':'Item deleted successfully'}")).toString();
             }
             var resById = memeModal.findById(idName);

@@ -10,9 +10,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pringboot1st.springboot1.config.JwtService;
 import pringboot1st.springboot1.repository.UserRepository;
+import pringboot1st.springboot1.services.GoogleApiAuth;
 import pringboot1st.springboot1.user.User;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class AuthControllerService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    private final GoogleApiAuth googleApiAuth;
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(AuthRegisterReq request) {
@@ -69,4 +72,44 @@ public class AuthControllerService {
         return null;
     }
 
+    public AuthResponse googleLogin(GoogleLoginDto authRegisterReq) {
+        try {
+            HashMap data = googleApiAuth.verifyToken(authRegisterReq.getAccess_token());
+            String userEmail = (String) data.get("email");
+            if (userEmail.isEmpty()) {
+                return AuthResponse.builder()
+                        .msg("Email can not be authenticated")
+                        .build();
+
+            }
+            var user = repository.findByUsername(userEmail);
+            if (!user.isPresent()) {
+                var userRegister = User.builder()
+                        .firstname(data.get("given_name").toString())
+                        .lastname(data.get("family_name").toString())
+                        .username(data.get("email").toString())
+                        .image(data.get("picture").toString())
+                        .password(passwordEncoder.encode("123"))
+                        .build();
+                var userData = repository.save(userRegister);
+                var jwtToken = jwtService.genarateTokenWithPayload(userRegister);
+                return AuthResponse.builder()
+                        .token(jwtToken)
+                        .userDetails(userData)
+                        .username(userData.getUsername())
+                        .build();
+            }
+            var userMain = user.orElseThrow();
+            return AuthResponse.builder()
+                    .token(jwtService.genarateTokenWithPayload(userMain))
+                    .userDetails(userMain)
+                    .username(userMain.getUsername())
+                    .build();
+        }catch (Exception e){
+            return AuthResponse.builder()
+                    .msg(e.getMessage())
+                    .build();
+        }
+
+    }
 }

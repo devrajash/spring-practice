@@ -23,4 +23,8 @@ public class AuthController {
     public ResponseEntity<AuthResponse> createLogin(@RequestBody AuthRegisterReq authRegisterReq) {
         return ResponseEntity.ok(service.register(authRegisterReq));
     }
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLoin(@RequestBody GoogleLoginDto authRegisterReq) {
+        return ResponseEntity.ok(service.googleLogin(authRegisterReq));
+    }
 }
